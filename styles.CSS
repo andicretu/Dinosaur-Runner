@@ -1,8 +1,8 @@
 .dino {
     height: 85px;
     width: 85px;
-    border: 2px solid black;
-    background: red;
+    border: 2px solid transparent;
+    background: transparent;
     position: absolute;
     top: 0;
     left: 0;
@@ -10,8 +10,9 @@
 .enemy {
     height: 65px;
     width: 35px;
-    border: 2px solid black;
-    background: blue;
+    border: 2px black;
+    background-image: url('Assets/cactus.png');
+    background-size: cover;
     position: absolute;
     top: 0;
     left: 0;
