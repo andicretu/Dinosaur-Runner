@@ -12,18 +12,23 @@ dino.style.left = 0 + dinoWidth + "px";
 
 let jumpInterval = "";
 let isJumping = false;
+let gameStarted = false;
+let startButton = document.getElementById("startButton");
 
 function jumpDino() {
+    isJumping = true;
+    if (gameStarted === false) {
+        startGame();
+    }
     let dinoPosition = parseInt(dino.style.top);
-    var dinoSpeed = 26 ;
-    let acceleration = 1.8;
+    var dinoSpeed = 50 ;
+    let acceleration = 5;
 
     jumpInterval = setInterval(() => {
-        if (dinoSpeed >= 0 && dinoPosition === base) {
+        if (dinoSpeed >= 0) {
             dinoSpeed -= acceleration;
             dinoPosition -= dinoSpeed;
             dino.style.top = dinoPosition + "px";
-            dino.textContent = dinoSpeed + " " + dino.style.top + " " + base;
         } else if (dinoSpeed < 0) {
             dinoSpeed -= acceleration;
             dinoPosition -= dinoSpeed;
@@ -31,37 +36,57 @@ function jumpDino() {
         }
         if (dinoPosition >= base) {
             clearInterval(jumpInterval);
+            isJumping = false;
+            dino.style.top = base + "px";
         };
     }, 100);
     createEnemies();
 }
 
+function startGame() {
+    createEnemies();
+    gameStarted = true;
+    startButton.textContent = '';
+}
+
 let enemyArray = [];
-let enemyContainer = document.getElementById("enemyContainer");
+let enemyContainer = document.getElementById('enemyContainer');
+let createEnemiesInterval;
 
 function createEnemies() {
     let enemy = {
         id: enemyArray.length,
         element: document.createElement('div'),
     }
-    enemy.element.classList.add("enemy");
-    enemy.element.style.left = width + "px";
+    enemy.element.classList.add('enemy');
+    enemy.element.style.top = base + "px";
+    let enemyWidth = enemy.element.offsetWidth;
+    enemy.element.style.left = (width - enemyWidth) + "px";
     enemyArray.push(enemy);
     enemyContainer.appendChild(enemy.element);
     moveEnemies(enemy);
 }
 
-let enemyXPositionArray = [];
+let minFreq = 4000;
+let maxFreq = 7000;
+
+clearInterval(createEnemiesInterval);
+let randomFreq = Math.random() * (maxFreq - minFreq) + minFreq;
+createEnemiesInterval = setInterval(createEnemies, randomFreq);
+
 let enemySpeed = 30;
+let moveInterval = "";
+let enemyXPositionArray = [];
 
 function moveEnemies(enemy) {
     let enemyXPosition = parseInt(enemy.element.style.left) || width;
     enemyXPositionArray[enemy.id] = enemyXPosition;
-    if (enemyXPositionArray[enemy.id] <= 0 + "px") {
+    if (enemyXPositionArray[enemy.id] > 0) {
         enemyXPositionArray[enemy.id] -= enemySpeed;
         enemy.element.style.left = enemyXPositionArray[enemy.id] + "px";
     } else {
         removeEnemy(enemy);
+        updateScore();
     }
     checkColision(enemy);
 }
@@ -69,6 +94,14 @@ function moveEnemies(enemy) {
 function removeEnemy(enemy) {
     enemyContainer.removeChild(enemy.element);
     enemyArray.splice(enemyArray.indexOf(enemy), 1);
+}
+
+let score = 0;
+let scoreValue = document.getElementById("scoreValue");
+
+function updateScore() {
+    score += 100;
+    scoreValue.textContent = score;
 }
 
 function checkColision(enemy) {
@@ -85,13 +118,17 @@ function checkColision(enemy) {
     }
 }
 
-function gameOver(enemy) {
+function gameOver() {
     clearInterval(jumpInterval);
-    removeEnemy(enemy);
+    clearInterval(moveEnemiesInterval);
+    clearInterval(createEnemiesInterval);
+    startButton.textContent = "Game Over!"
 }
 
 let moveEnemiesInterval = setInterval(function() {
-    enemyArray.forEach(moveEnemies);
+    for (let i = 0; i < enemyArray.length; i++) {
+        moveEnemies(enemyArray[i]);
+    }
 }, 100);
 
 let keyPressed = {};
@@ -101,3 +138,4 @@ document.addEventListener('keydown', (e) => {
         jumpDino();
     } 
 });
+
