@@ -8,11 +8,22 @@
     left: 0;
 }
 .enemy {
-    height: 85px;
+    height: 65px;
     width: 35px;
     border: 2px solid black;
     background: blue;
     position: absolute;
     top: 0;
     left: 0;
+}
+.startButton {
+    background: blue;
+    position: absolute;
+    top: center;
+    left: center;
+}
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
 }
